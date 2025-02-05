@@ -1,0 +1,5 @@
+.env
+*.csv
+*.tar.gz
+*.xlsx
+data
