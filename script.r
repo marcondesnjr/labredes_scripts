@@ -1,10 +1,11 @@
-library(pracma)
-library(fractaldim)
-library(ptsuite)
-library(openxlsx)
+library("pracma")
+library("fractaldim")
+library("ptsuite")
+library("openxlsx")
 
 ##################################################################################
-BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_DIR <- file.path(BASE_DIR, "data")
 RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx")
 ##################################################################################
@@ -73,17 +74,24 @@ for(ram in rams){
 
 colnames(DMUDataFrame) <- c("DMU", "Fractal Dimension" ,"Time Taken To Tests", "Time Per Request","Transfer Rate", "Requests Per Second", "Hurst Parameter", "Alfa Tail Shape" )
 colnames(DMUDesc) <- c("VRAM" ,"Server", "Algorithm")
-DFList[["DMUDesc"]] <- DMUDesc
+#DFList[["DMUDesc"]] <- DMUDesc
+
+wb <- createWorkbook()
+addWorksheet(wb, "DMUDesc")
+writeDataTable(wb, "DMUDesc", x = DMUDesc, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
+
 for(scaleName in scaleVector){
   filtered <- subset(DMUDataFrame, grepl(scaleName, DMU))
   filtered$DMU <- gsub(paste("_", scaleName, sep = ""),"",as.character(filtered$DMU))
   rownames(filtered) <- filtered[[1]]
   filtered <- filtered[, -1]
-  DFList[[scaleName]] <- filtered
-  write.table(filtered, file.path(BASE_DIR, paste(scaleName, ".csv", sep = "")), sep = ",", row.names = TRUE, col.names = TRUE)
+  addWorksheet(wb, scaleName)
+  writeDataTable(wb, scaleName, x = filtered, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
+  #write.table(filtered, file.path(BASE_DIR, paste(scaleName, ".csv", sep = "")), sep = ",", row.names = TRUE, col.names = TRUE)
 }
 
-write.xlsx(DFList, file = , rowNames=TRUE, colNames=TRUE)
+saveWorkbook(wb, RESULT_DIR, overwrite = TRUE)
+#write.xlsx(DFList, file = RESULT_DIR , rowNames=TRUE, colNames=TRUE)
 
 
 

@@ -2,8 +2,10 @@ library("Benchmarking")
 #library("ggplot2")
 library("openxlsx")
 
+
 ######################################################################################################
-BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx")
 FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx")
 INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request")
@@ -41,14 +43,14 @@ for(sh in SHEET_NAMES){
   print(names(badDMU))
   
   
-  effDataframe <- cbind(SCCR_I$eff, CCR_I$eff, BCC_I$eff, SCCR_O$eff, CCR_O$eff, BCC_O$eff)
+  effDataframe <- data.frame(SCCR_I$eff, CCR_I$eff, BCC_I$eff, SCCR_O$eff, CCR_O$eff, BCC_O$eff)
   colnames(effDataframe) <- c("SCCR_I", "CCR_I", "BCC_I", "SCCR_O", "CCR_O", "BCC_O")
   rownames(effDataframe) <- rownames(dataDEA)
   
   sheetName <- paste(sh, "Eff", sep="_")
   
   addWorksheet(WORKBOOK, sheetName)
-  writeData(WORKBOOK, sheetName, x = effDataframe, rowNames = TRUE, colNames = TRUE)
+  writeDataTable(WORKBOOK, sheetName, x = effDataframe, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
 }
 
 saveWorkbook(WORKBOOK, FINAL_TABLE, overwrite = TRUE)
