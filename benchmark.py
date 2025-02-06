@@ -25,7 +25,7 @@ def main():
 
     nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'http://{SERVER_IP}/')
     apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'http://{SERVER_IP}/')
-    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'https://{SERVER_IP}:8443/')
+    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'http://{SERVER_IP}:8443/')
 
     SERVICES_LIST = [nginx, apache2, quic]
 
