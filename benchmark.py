@@ -7,7 +7,6 @@ SERVER_USER = 'root'
 PRIVATE_KEY_PATH = os.path.join('~','.ssh','labredes')
 CONTAINER_ID = 'c581c8956aa6'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-SERVICES_LIST = ['apache2', 'nginx','quic']
 TCP_ALGOS_LIST = ['cubic', 'bic', 'westwood', 'hybla']
 TESTS_LIST = [
     {'req': 500, 'conc':50},
@@ -23,41 +22,36 @@ COMPRESS_DATA = True
 
 
 def main():
+
+    nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'http://{SERVER_IP}/')
+    apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'http://{SERVER_IP}/')
+    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'https://{SERVER_IP}:8443/')
+
+    SERVICES_LIST = [nginx, apache2, quic]
+
     print('Preparing directories')
     make_dirs()
 
     print('Stopping all servers')
-    shutdown_all_services()
+    shutdown_all_services(SERVICES_LIST)
 
-    #for algo in TCP_ALGOS_LIST: #<- Change order
     for service in SERVICES_LIST:
-        #print(f'Configuring algorithm {algo}')
-        print(f'Starting service {service}')
-        if service == 'quic':
-            run_in_docker(f'service nginx start')
-        else:
-            run_in_docker(f'service {service} start')
-        #change_tcp_alg(algo)
-        #for service in SERVICES_LIST: #<- Change order
+        print(f'Starting service {service.name}')
+        run_in_docker(service.up_command)
+
         for algo in TCP_ALGOS_LIST:
-            #print(f'Starting service {service}')
             print(f'Configuring algorithm {algo}')
             change_tcp_alg(algo)
-            #run_in_docker(f'service {service} start')
             for test in TESTS_LIST:
                 req = test['req']
                 conc = test['conc']
                 for i in range(MAX_RETRY+1):
                     try:
                         print(f'Running {req} requests with {conc} concurrency')
-                        test_name = f'{service}_cubic_{algo}_{req}r{conc}c'
-                        test_folder = os.path.join(DATA_DIR, service, algo, f'{req}r{conc}c')
+                        test_name = service.get_test_name(req,conc,algo)
+                        test_folder = os.path.join(DATA_DIR, service.name, algo, f'{req}r{conc}c')
                         test_output = os.path.join(test_folder, f'{test_name}_out.txt')
-                        test_csv = os.path.join(test_folder,f'{test_name}.csv')
-                        if service == 'quic':
-                            cmd = f'ab -n {req} -c {conc} -e "{test_csv}" {TEST_URL[:-1]}:8443/'
-                        else:
-                            cmd = f'ab -n {req} -c {conc} -e "{test_csv}" {TEST_URL}'
+                        cmd = service.get_test_command(req, conc,algo)
                         with open(test_output, 'w') as output_file:
                             run_local(cmd, output_file)
                         break
@@ -66,13 +60,8 @@ def main():
                         print('Test Failed')
                         print('Retrying')
                         time.sleep(RETRY_DELAY)
-            #print(f'Stopping service {service}')
-            #run_in_docker(f'service {service} stop')
-        print(f'Stopping service {service}')
-        if service == 'quic':
-            run_in_docker(f'service nginx stop')
-        else:
-            run_in_docker(f'service {service} stop')
+        print(f'Stopping service {service.name}')
+        run_in_docker(service.down_command)
 
     if COMPRESS_DATA:
         print('Compressing results')
@@ -86,17 +75,32 @@ def main():
             run_local(f'curl bashupload.com -T "{compressed_data}"')
         except:
             print('Upload failed =(')
+
+class TestService:
+    def __init__(self, name:str, up_command:str, down_command:str, test_url:str):
+        self.name = name
+        self.up_command = up_command
+        self.Down_command = down_command
+        self.test_url = test_url
     
+
+    def get_test_command(self, req:int, conc:int, algo:str) -> str:
+        test_name = self.get_test_name(req, conc, algo)
+        test_folder = os.path.join(DATA_DIR, self.name, algo, f'{req}r{conc}c')
+        test_csv = os.path.join(test_folder,f'{test_name}.csv')
+        return f'ab -n {req} -c {conc} -e "{test_csv}" {self.test_url}'
+    
+    def get_test_name(self, req:int, conc:int, algo:str) -> str:
+        return f'{self.name}_cubic_{algo}_{req}r{conc}c'
+
+
 def change_tcp_alg(algo):
     run_in_server(f'sysctl net.ipv4.tcp_congestion_control={algo}')
 
-def shutdown_all_services():
+def shutdown_all_services(services_list: list[TestService]):
     cmd = ''
-    for service in SERVICES_LIST:
-        if service == 'quic':
-            cmd += f'service nginx stop; '
-        else:
-            cmd += f'service {service} stop; '
+    for service in services_list:
+        cmd += f'{service.Down_command}; '
     run_in_docker(cmd)
 
 #Send a command to docker container running in the server
@@ -118,12 +122,12 @@ def run_local(cmd, out=None):
     
 
 #Make data dirs
-def make_dirs():
-    for service in SERVICES_LIST:
+def make_dirs(services_list: list[TestService]):
+    for service in services_list:
         for algo in TCP_ALGOS_LIST:
             for test in TESTS_LIST:
                 req = test['req']
                 conc = test['conc']
-                os.makedirs(os.path.join(DATA_DIR,service,algo,f'{req}r{conc}c'), exist_ok=True)
+                os.makedirs(os.path.join(DATA_DIR, service.name, algo, f'{req}r{conc}c'), exist_ok=True)
 
 main()

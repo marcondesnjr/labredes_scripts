@@ -3,9 +3,11 @@ library(fractaldim)
 library(ptsuite)
 library(openxlsx)
 
+##################################################################################
 BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
 DATA_DIR <- file.path(BASE_DIR, "data")
-
+RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx")
+##################################################################################
 
 scaleVector <- c()
 dmuindex <- 1
@@ -81,7 +83,7 @@ for(scaleName in scaleVector){
   write.table(filtered, file.path(BASE_DIR, paste(scaleName, ".csv", sep = "")), sep = ",", row.names = TRUE, col.names = TRUE)
 }
 
-write.xlsx(DFList, file = file.path(BASE_DIR, "Results.xlsx"), rowNames=TRUE, colNames=TRUE)
+write.xlsx(DFList, file = , rowNames=TRUE, colNames=TRUE)
 
 
 
