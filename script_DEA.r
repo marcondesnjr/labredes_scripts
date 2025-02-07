@@ -4,8 +4,8 @@ library("openxlsx")
 
 
 ######################################################################################################
-#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
+BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx")
 FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx")
 INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request")
@@ -25,14 +25,15 @@ for(sh in SHEET_NAMES){
   inputs = dataDEA[, INPUT_VARS] # select only input variables values
   outputs = dataDEA[, OUTPUT_VARS] # select only output variables values, SLACK=TRUE
   
+  ##########
   SCCR_I=sdea(inputs,outputs,RTS="CRS",ORIENTATION="in") # runs super-efficiency input-oriented CCR DEA model
-  CCR_I=dea(inputs, outputs, RTS="CRS", ORIENTATION="in", SLACK=TRUE) # runs input-oriented CCR DEA model
+  CCR_I=dea(inputs, outputs, RTS="CRS", ORIENTATION="IN", SLACK=TRUE) # runs input-oriented CCR DEA model
   BCC_I=dea(inputs,outputs,RTS="VRS",ORIENTATION="IN", SLACK=TRUE)
   
   SCCR_O=sdea(inputs,outputs,RTS="CRS",ORIENTATION="out")
   CCR_O=dea(inputs,outputs,RTS="CRS",ORIENTATION="out", SLACK=TRUE)
   BCC_O=dea(inputs,outputs,RTS="VRS",ORIENTATION="out", SLACK=TRUE)
-  
+  ########
   bestDMU = which.max(SCCR_I$eff)
   badDMU = which.min(SCCR_I$eff)
   

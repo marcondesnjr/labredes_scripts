@@ -10,7 +10,8 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 TCP_ALGOS_LIST = ['cubic', 'bic', 'westwood', 'hybla']
 TESTS_LIST = [
     {'req': 500, 'conc':50},
-    {'req': 200, 'conc':10}
+    {'req': 200, 'conc':10},
+    {'req': 1000, 'conc':100},
 ]
 DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
 TEST_URL = 'http://192.168.122.13/'
@@ -30,7 +31,7 @@ def main():
     SERVICES_LIST = [nginx, apache2, quic]
 
     print('Preparing directories')
-    make_dirs()
+    make_dirs(SERVICES_LIST)
 
     print('Stopping all servers')
     shutdown_all_services(SERVICES_LIST)
@@ -80,7 +81,7 @@ class TestService:
     def __init__(self, name:str, up_command:str, down_command:str, test_url:str):
         self.name = name
         self.up_command = up_command
-        self.Down_command = down_command
+        self.down_command = down_command
         self.test_url = test_url
     
 
@@ -100,7 +101,7 @@ def change_tcp_alg(algo):
 def shutdown_all_services(services_list: list[TestService]):
     cmd = ''
     for service in services_list:
-        cmd += f'{service.Down_command}; '
+        cmd += f'{service.down_command}; '
     run_in_docker(cmd)
 
 #Send a command to docker container running in the server

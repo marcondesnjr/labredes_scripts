@@ -4,11 +4,19 @@ library("ptsuite")
 library("openxlsx")
 
 ##################################################################################
-#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
+BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_DIR <- file.path(BASE_DIR, "data")
 RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx")
 ##################################################################################
+
+readValue <- function(file){
+  temp <- scan(file = file)
+  if (length(temp) == 0) {
+    temp <- NA
+  }
+  return(temp)
+}
 
 scaleVector <- c()
 dmuindex <- 1
@@ -23,15 +31,7 @@ DMUDesc = data.frame(
   
 )
 
-DMUDataFrame = data.frame(
-  DMU = c(),
-  fdim = c(),
-  timeToTest = c(),
-  TimePerRequest = c(),
-  transferRate = c(),
-  requestPerSecond  = c(),
-  hurst = c()
-)
+DMUDataFrame = data.frame()
 
 rams <- list.dirs(path = DATA_DIR, full.names = TRUE, recursive = FALSE)
 for(ram in rams){
@@ -46,6 +46,7 @@ for(ram in rams){
       scales <- list.dirs(path = alg, full.names = TRUE, recursive = FALSE)
         for(scale in scales){
           scaleName <- basename(scale)
+          statsDir <- file.path(scale, "stats")
           
           if(! scaleName %in% scaleVector){
             scaleVector <- append(scaleVector, scaleName)
@@ -55,16 +56,34 @@ for(ram in rams){
           DMUId <- paste(rownames(DMU) ,basename(scale), sep = "_")
           statsDir <- file.path(scale, "stats")
           
-          timeToTest <- scan(file = file.path(scale, "stats", "time_taken_for_tests.txt"))
-          transferRate <- scan(file = file.path(scale, "stats", "transfer_rate.txt"))
-          TimePerRequest <- scan(file = file.path(scale, "stats", "time_per_req.txt"))
-          requestPerSecond <- scan(file = file.path(scale, "stats", "req_per_sec.txt"))
-          timeSeries = scan(file = file.path(scale, "stats", "timeseries.txt"))
-          fdim <- fd.estimate(timeSeries, method="rodogram")[2]
-          hurst <- hurstexp(timeSeries)[1]
-          alfaTailShape <- alpha_mle(timeSeries)[1]
+          timeToTest <- readValue(file.path(statsDir, "time_taken_for_tests.txt"))
+          transferRate <- readValue(file.path(statsDir, "transfer_rate.txt"))
+          TimePerRequest <- readValue(file.path(statsDir, "time_per_req.txt"))
+          requestPerSecond <- readValue(file.path(statsDir, "req_per_sec.txt"))
+          timeSeries = readValue(file.path(statsDir, "timeseries.txt"))
+          if(is.na(timeSeries[1])){
+            fdim <- NA
+            hurst <- NA
+            alfaTailShape <- NA
+          }else{
+            fdim <- fd.estimate(timeSeries, method="rodogram")[[2]]
+            hurst <- hurstexp(timeSeries)[[1]]
+            alfaTailShape <- alpha_mle(timeSeries)[[1]]
+          }
           
-          row <- data.frame(DMUId, fdim, timeToTest, TimePerRequest, transferRate, requestPerSecond, hurst, alfaTailShape)
+          
+          row <- data.frame(
+            DMU = DMUId,
+            fdim = fdim,
+            timeToTest = timeToTest,
+            TimePerRequest = TimePerRequest,
+            transferRate = transferRate,
+            requestPerSecond  = requestPerSecond,
+            hurst = hurst,
+            alfaTailShape = alfaTailShape
+          )
+          
+          #row <- data.frame(DMUId, fdim, timeToTest, TimePerRequest, transferRate, requestPerSecond, hurst, alfaTailShape)
           
           DMUDataFrame <- rbind(DMUDataFrame, row)
       }
