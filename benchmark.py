@@ -2,7 +2,8 @@
 
 import os, subprocess, time, shlex
 
-SERVER_PATH = '192.168.111.158'
+SERVER = '192.168.111.158'
+SERVER_PATH = '/'
 SERVER_USER = 'root'
 PRIVATE_KEY_PATH = os.path.join('~','.ssh','labredes')
 CONTAINER_ID = 'c581c8956aa6'
@@ -24,9 +25,9 @@ COMPRESS_DATA = True
 
 def main():
 
-    nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'http://{SERVER_PATH}/')
-    apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'http://{SERVER_PATH}/')
-    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'http://{SERVER_PATH}:8443/')
+    nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'http://{SERVER}{SERVER_PATH}')
+    apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'http://{SERVER}{SERVER_PATH}')
+    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'http://{SERVER}:8443{SERVER_PATH}')
 
     SERVICES_LIST = [nginx, apache2, quic]
 
@@ -111,7 +112,7 @@ def run_in_docker(cmd):
 
 #Send a command to the server
 def run_in_server(cmd):
-    full_cmd = f'ssh {SERVER_USER}@{SERVER_PATH} -i {PRIVATE_KEY_PATH} "{cmd}"'
+    full_cmd = f'ssh {SERVER_USER}@{SERVER} -i {PRIVATE_KEY_PATH} "{cmd}"'
     #print(shlex.split(full_cmd))
     p=subprocess.run(shlex.split(full_cmd), check=True)
     return p.stdout
