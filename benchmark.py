@@ -2,32 +2,32 @@
 
 import os, subprocess, time, shlex
 
-SERVER = '192.168.111.158'
-SERVER_PATH = '/'
+SERVER = 'www.netlab.com'
+SERVER_PATH = '/sample-3s.mp3'
 SERVER_USER = 'root'
-PRIVATE_KEY_PATH = os.path.join('~','.ssh','labredes')
-CONTAINER_ID = 'c581c8956aa6'
+PRIVATE_KEY_PATH = os.path.join('/tmp','tmp.8rYlEhsQMo','tempid')
+CONTAINER_ID = '29df'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-TCP_ALGOS_LIST = ['cubic', 'bic', 'westwood', 'hybla']
+TCP_ALGOS_LIST = ['cubic', 'bic', 'westwood', 'htcp', 'hybla', 'vegas', 'nv', 'scalable', 'lp', 'veno', 'yeah', 'illinois', 'dctcp', 'cdg', 'bbr']
 TESTS_LIST = [
-    {'req': 500, 'conc':50},
-    {'req': 200, 'conc':10},
-    {'req': 1000, 'conc':100},
+    {'req': 2000, 'conc':100},
+    {'req': 10000, 'conc':500},
+    {'req': 20000, 'conc':1000},
 ]
 DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
-TEST_URL = 'http://192.168.122.13/'
+#TEST_URL = 'http://192.168.122.13/'
 MAX_RETRY = 0
 RETRY_DELAY = 2
 
-UPLOAD_DATA = False
+UPLOAD_DATA = True
 COMPRESS_DATA = True
 
 
 def main():
 
-    nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'http://{SERVER}{SERVER_PATH}')
-    apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'http://{SERVER}{SERVER_PATH}')
-    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'http://{SERVER}:8443{SERVER_PATH}')
+    nginx = TestService('nginx', 'service nginx start', 'service nginx stop', f'https://{SERVER}{SERVER_PATH}')
+    apache2 = TestService('apache2', 'service apache2 start', 'service apache2 stop', f'https://{SERVER}{SERVER_PATH}')
+    quic = TestService('quic', 'service nginx start', 'service nginx stop', f'https://{SERVER}:8443{SERVER_PATH}')
 
     SERVICES_LIST = [nginx, apache2, quic]
 
