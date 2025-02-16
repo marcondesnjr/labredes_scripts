@@ -4,8 +4,8 @@ library("ptsuite")
 library("openxlsx")
 
 ##################################################################################
-BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
+#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_DIR <- file.path(BASE_DIR, "data")
 RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx")
 ##################################################################################

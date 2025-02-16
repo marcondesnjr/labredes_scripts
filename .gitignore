@@ -1,6 +1,2 @@
 .env
-*.csv
-*.tar.gz
-*.xlsx
-data
 *.vscode

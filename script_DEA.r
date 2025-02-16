@@ -4,13 +4,13 @@ library("openxlsx")
 
 
 ######################################################################################################
-BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
+#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
 DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx")
 FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx")
 INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request")
 OUTPUT_VARS <- c("Transfer.Rate", "Requests.Per.Second", "Hurst.Parameter", "Alfa.Tail.Shape")
-SHEETS_NUMS <- c(2:3)
+SHEETS_NUMS <- c(2:4)
 ######################################################################################################
 
 WORKBOOK <- loadWorkbook(DATA_XLSX)
