@@ -115,7 +115,7 @@ def run_in_server(cmd):
     stdout, stderr = p.communicate()
     if p.returncode != 0:
         raise subprocess.CalledProcessError(p.returncode, full_cmd, output=stdout)
-    print(stdout)
+    print(stdout.decode("utf-8"))
     return stdout
 
 def run_local(cmd, out=None):
@@ -126,10 +126,11 @@ def run_local(cmd, out=None):
             raise subprocess.CalledProcessError(p.returncode, cmd, output=stdout)
         print(stdout)
         return stdout
-    else: p = subprocess.Popen(shlex.split(cmd), stdout=out, stderr=subprocess.PIPE)
-    _, stderr = p.communicate()
-    if p.returncode != 0:
-        raise subprocess.CalledProcessError(p.returncode, cmd, output="")
+    else:
+        p = subprocess.Popen(shlex.split(cmd), stdout=out, stderr=subprocess.PIPE)
+        _, stderr = p.communicate()
+        if p.returncode != 0:
+            raise subprocess.CalledProcessError(p.returncode, cmd, output="")
 
 def make_dirs(services_list):
     for service in services_list:
