@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module benchmark</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>benchmark</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/jmnj/projs/lab-redes/labredes_scripts/benchmark.py">/home/jmnj/projs/lab-redes/labredes_scripts/benchmark.py</a></font></td></tr></table>
+    <p><tt>Script&nbsp;to&nbsp;run&nbsp;tests&nbsp;on&nbsp;a&nbsp;server&nbsp;using&nbsp;ab&nbsp;and&nbsp;different&nbsp;TCP&nbsp;congestion&nbsp;algorithms&nbsp;and&nbsp;services<br>
+&nbsp;<br>
+This&nbsp;script&nbsp;automates&nbsp;the&nbsp;process&nbsp;of&nbsp;running&nbsp;performance&nbsp;tests&nbsp;on&nbsp;a&nbsp;server&nbsp;using&nbsp;different&nbsp;TCP&nbsp;congestion&nbsp;control<br>
+algorithms&nbsp;and&nbsp;services.&nbsp;It&nbsp;utilizes&nbsp;the&nbsp;Apache&nbsp;Benchmark&nbsp;(ab)&nbsp;tool&nbsp;to&nbsp;measure&nbsp;the&nbsp;performance&nbsp;of&nbsp;services<br>
+running&nbsp;inside&nbsp;a&nbsp;Docker&nbsp;container&nbsp;on&nbsp;the&nbsp;target&nbsp;server.&nbsp;The&nbsp;script&nbsp;performs&nbsp;the&nbsp;following&nbsp;steps:<br>
+&nbsp;<br>
+1.&nbsp;Defines&nbsp;server&nbsp;and&nbsp;test&nbsp;configurations,&nbsp;including&nbsp;the&nbsp;server&nbsp;address,&nbsp;user&nbsp;credentials,<br>
+Docker&nbsp;container&nbsp;ID,&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;TCP&nbsp;congestion&nbsp;algorithms&nbsp;and&nbsp;test&nbsp;parameters.<br>
+2.&nbsp;Initializes&nbsp;services&nbsp;to&nbsp;be&nbsp;tested&nbsp;(nginx,&nbsp;apache2,&nbsp;and&nbsp;quic)&nbsp;with&nbsp;their&nbsp;respective&nbsp;start&nbsp;and&nbsp;stop&nbsp;commands&nbsp;and&nbsp;test&nbsp;URLs.<br>
+3.&nbsp;Prepares&nbsp;directories&nbsp;for&nbsp;storing&nbsp;test&nbsp;results.<br>
+4.&nbsp;Stops&nbsp;all&nbsp;running&nbsp;services&nbsp;to&nbsp;ensure&nbsp;a&nbsp;clean&nbsp;testing&nbsp;environment.<br>
+5.&nbsp;Iterates&nbsp;over&nbsp;each&nbsp;service&nbsp;and&nbsp;TCP&nbsp;congestion&nbsp;algorithm,&nbsp;running&nbsp;performance&nbsp;tests&nbsp;with&nbsp;varying&nbsp;numbers<br>
+of&nbsp;requests&nbsp;and&nbsp;concurrency&nbsp;levels.<br>
+6.&nbsp;Saves&nbsp;the&nbsp;test&nbsp;results&nbsp;in&nbsp;a&nbsp;specified&nbsp;directory.<br>
+7.&nbsp;Optionally&nbsp;compresses&nbsp;the&nbsp;test&nbsp;results&nbsp;into&nbsp;a&nbsp;tar.gz&nbsp;file.<br>
+8.&nbsp;Optionally&nbsp;uploads&nbsp;the&nbsp;compressed&nbsp;test&nbsp;results&nbsp;to&nbsp;bashupload.com.<br>
+&nbsp;<br>
+The&nbsp;script&nbsp;handles&nbsp;retries&nbsp;in&nbsp;case&nbsp;of&nbsp;test&nbsp;failures&nbsp;and&nbsp;provides&nbsp;detailed&nbsp;output&nbsp;for&nbsp;each&nbsp;step&nbsp;of&nbsp;the&nbsp;process.<br>
+&nbsp;<br>
+@author:&nbsp;Marcondes&nbsp;Junior<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;github.com/marcondesnjr</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="shlex.html">shlex</a><br>
+</td><td width="25%" valign=top><a href="subprocess.html">subprocess</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="benchmark.html#TestService">TestService</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TestService">class <strong>TestService</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#TestService">TestService</a>(name,&nbsp;up_command,&nbsp;down_command,&nbsp;test_url)<br>
+&nbsp;<br>
+Class&nbsp;to&nbsp;represent&nbsp;a&nbsp;service&nbsp;to&nbsp;be&nbsp;tested<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TestService-__init__"><strong>__init__</strong></a>(self, name, up_command, down_command, test_url)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="TestService-get_test_command"><strong>get_test_command</strong></a>(self, req, conc, algo)</dt><dd><tt>Generate&nbsp;test&nbsp;command&nbsp;to&nbsp;be&nbsp;executed<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;req&nbsp;(int):&nbsp;number&nbsp;of&nbsp;requests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conc&nbsp;(int):&nbsp;number&nbsp;of&nbsp;concurrent&nbsp;requests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;algo&nbsp;(string):&nbsp;selected&nbsp;TCP&nbsp;congestion&nbsp;algorithm<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string:&nbsp;test&nbsp;command&nbsp;to&nbsp;be&nbsp;executed</tt></dd></dl>
+
+<dl><dt><a name="TestService-get_test_name"><strong>get_test_name</strong></a>(self, req, conc, algo)</dt><dd><tt>Generate&nbsp;unique&nbsp;test&nbsp;name&nbsp;for&nbsp;the&nbsp;test<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;req&nbsp;(int):&nbsp;number&nbsp;of&nbsp;requests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conc&nbsp;(int):&nbsp;number&nbsp;of&nbsp;concurrent&nbsp;requests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;algo&nbsp;(string):&nbsp;selected&nbsp;TCP&nbsp;congestion&nbsp;algorithm<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string:&nbsp;test&nbsp;command&nbsp;to&nbsp;be&nbsp;executed</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-change_tcp_alg"><strong>change_tcp_alg</strong></a>(algo)</dt><dd><tt>Change&nbsp;the&nbsp;TCP&nbsp;congestion&nbsp;algorithm&nbsp;to&nbsp;be&nbsp;used&nbsp;on&nbsp;the&nbsp;server<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;algo&nbsp;(string):&nbsp;TCP&nbsp;congestion&nbsp;algorithm&nbsp;to&nbsp;be&nbsp;used</tt></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>()</dt></dl>
+ <dl><dt><a name="-make_dirs"><strong>make_dirs</strong></a>(services_list)</dt><dd><tt>Create&nbsp;directories&nbsp;to&nbsp;store&nbsp;test&nbsp;results<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;services_list&nbsp;(list):&nbsp;list&nbsp;of&nbsp;services&nbsp;to&nbsp;be&nbsp;tested</tt></dd></dl>
+ <dl><dt><a name="-run_in_docker"><strong>run_in_docker</strong></a>(cmd)</dt><dd><tt>Run&nbsp;a&nbsp;command&nbsp;inside&nbsp;a&nbsp;remote&nbsp;Docker&nbsp;container<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cmd&nbsp;(string):&nbsp;command&nbsp;line</tt></dd></dl>
+ <dl><dt><a name="-run_in_server"><strong>run_in_server</strong></a>(cmd)</dt><dd><tt>Run&nbsp;a&nbsp;command&nbsp;on&nbsp;the&nbsp;server&nbsp;via&nbsp;ssh<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cmd&nbsp;(string):&nbsp;command&nbsp;line<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;subprocess.CalledProcessError:&nbsp;error&nbsp;running&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes:&nbsp;output</tt></dd></dl>
+ <dl><dt><a name="-run_local"><strong>run_local</strong></a>(cmd, out=None)</dt><dd><tt>Run&nbsp;a&nbsp;command&nbsp;locally<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cmd&nbsp;(string):&nbsp;command&nbsp;line<br>
+&nbsp;&nbsp;&nbsp;&nbsp;out&nbsp;(bytes,&nbsp;optional):&nbsp;output.&nbsp;Defaults&nbsp;to&nbsp;None.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;subprocess.CalledProcessError:&nbsp;error&nbsp;running&nbsp;the&nbsp;command<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes:&nbsp;output</tt></dd></dl>
+ <dl><dt><a name="-shutdown_all_services"><strong>shutdown_all_services</strong></a>(services_list)</dt><dd><tt>shutdown&nbsp;all&nbsp;services&nbsp;to&nbsp;ensure&nbsp;a&nbsp;clean&nbsp;testing&nbsp;environment<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;services_list&nbsp;(list):&nbsp;list&nbsp;of&nbsp;services&nbsp;to&nbsp;be&nbsp;stopped</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>COMPRESS_DATA</strong> = True<br>
+<strong>CONTAINER_ID</strong> = '29df'<br>
+<strong>DATA_DIR</strong> = '/home/jmnj/projs/lab-redes/labredes_scripts/data'<br>
+<strong>MAX_RETRY</strong> = 1<br>
+<strong>PRIVATE_KEY_PATH</strong> = '/home/djr/tmp.8rYlEhsQMo/tempid'<br>
+<strong>RETRY_DELAY</strong> = 10<br>
+<strong>SCRIPT_DIR</strong> = '/home/jmnj/projs/lab-redes/labredes_scripts'<br>
+<strong>SERVER</strong> = 'www.netlab.com'<br>
+<strong>SERVER_IP</strong> = '192.168.0.15'<br>
+<strong>SERVER_PATH</strong> = '/sample-3s.mp3'<br>
+<strong>SERVER_USER</strong> = 'root'<br>
+<strong>TCP_ALGOS_LIST</strong> = ['cubic', 'bic', 'westwood', 'htcp', 'hybla', 'vegas', 'nv', 'scalable', 'lp', 'veno', 'yeah', 'illinois', 'dctcp', 'cdg', 'bbr']<br>
+<strong>TESTS_LIST</strong> = [{'conc': 100, 'req': 2000}, {'conc': 500, 'req': 10000}, {'conc': 1000, 'req': 20000}]<br>
+<strong>UPLOAD_DATA</strong> = True</td></tr></table>
+</body></html>

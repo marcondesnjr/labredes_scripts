@@ -1,4 +1,17 @@
 #!/bin/bash
+
+# This script collects performance statistics from output files located in the 'data' directory.
+# It processes files with the '_out.txt' suffix and extracts specific metrics:
+# - Requests per second
+# - Time per request
+# - Transfer rate
+# - Time taken for tests
+# Then, it extracts the time series data from the corresponding CSV files.
+# The extracted metrics are saved into corresponding 'stats' subdirectories within the same directory as the input files.
+# Each directory can only contain a sigle output file and a single CSV file, or the data will be overwritten.
+# Author: Marcondes Junior
+# github.com/marcondesnjr
+
 FILE_LIST=$(find data -type f -name '*_out.txt')
 for file in $FILE_LIST; do
     DIR_NAME=$(dirname "$file")

@@ -1,15 +1,19 @@
+# Description: This script reads the results of the tests and generates a excel file with the results
+# Author: Marcondes Junior
+# github.com/marcondesnjr
+
 library("pracma")
 library("fractaldim")
 library("ptsuite")
 library("openxlsx")
 
 ##################################################################################
-#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
-DATA_DIR <- file.path(BASE_DIR, "data")
-RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx")
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
+DATA_DIR <- file.path(BASE_DIR, "data") # Change this to the path of the directory where the tests are stored
+RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx") # Change this to the path of a file where the tests results will be stored
 ##################################################################################
 
+# Function to read a file, return NA if the file is empty
 readValue <- function(file){
   temp <- scan(file = file)
   if (length(temp) == 0) {

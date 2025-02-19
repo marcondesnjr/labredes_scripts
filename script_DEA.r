@@ -1,16 +1,20 @@
+# Description: This script reads a spreadsheet with data from a set of tests 
+# and applies DEA models to evaluate the efficiency of the DMUs. Subsequently, the tests are
+# saved in a new spreadsheet with the efficiency values of each the DMUs.
+# Author: Marcondes Junior
+# github.com/marcondesnjr
+
 library("Benchmarking")
-#library("ggplot2")
 library("openxlsx")
 
 
 ######################################################################################################
-#BASE_DIR <- file.path("/","home","jmnj","projs","lab-redes","labredes_scripts")
-BASE_DIR <- file.path("/","home","jmnj","labredes","sctests")
-DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx")
-FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx")
-INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request")
-OUTPUT_VARS <- c("Transfer.Rate", "Requests.Per.Second", "Hurst.Parameter", "Alfa.Tail.Shape")
-SHEETS_NUMS <- c(2:4)
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
+DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx") # Change this to the path of a file where the tests results are stored
+FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx") # Change this to the path of a file where the tests results will be stored
+INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request") # input variables
+OUTPUT_VARS <- c("Transfer.Rate", "Requests.Per.Second", "Hurst.Parameter", "Alfa.Tail.Shape") # output variables
+SHEETS_NUMS <- c(2:4) # sheets with test data to be read
 ######################################################################################################
 
 WORKBOOK <- loadWorkbook(DATA_XLSX)
@@ -18,16 +22,18 @@ SHEET_NAMES <- names(WORKBOOK)[SHEETS_NUMS]
 for(sh in SHEET_NAMES){
   
   data <- read.xlsx(WORKBOOK, colNames = TRUE, rowNames = TRUE, startRow=1, sheet=sh) # read spreadsheet
+  # delete rows with NA values
   delete.na <- function(DF, n=0) {
     DF[rowSums(is.na(DF)) <= n,]
   }
+
   dataDEA <- delete.na(data)
   inputs = dataDEA[, INPUT_VARS] # select only input variables values
   outputs = dataDEA[, OUTPUT_VARS] # select only output variables values, SLACK=TRUE
   
-  ##########
-  SCCR_I=sdea(inputs,outputs,RTS="CRS",ORIENTATION="in") # runs super-efficiency input-oriented CCR DEA model
-  CCR_I=dea(inputs, outputs, RTS="CRS", ORIENTATION="IN", SLACK=TRUE) # runs input-oriented CCR DEA model
+  ########
+  SCCR_I=sdea(inputs,outputs,RTS="CRS",ORIENTATION="in")
+  CCR_I=dea(inputs, outputs, RTS="CRS", ORIENTATION="IN", SLACK=TRUE)
   BCC_I=dea(inputs,outputs,RTS="VRS",ORIENTATION="IN", SLACK=TRUE)
   
   SCCR_O=sdea(inputs,outputs,RTS="CRS",ORIENTATION="out")
@@ -57,4 +63,3 @@ for(sh in SHEET_NAMES){
 saveWorkbook(WORKBOOK, FINAL_TABLE, overwrite = TRUE)
 # data.frame(SCCR_I$eff)
 #dea.plot(inputs,outputs,RTS="crs",ORIENTATION="in");
-# write.xlsx2(SCCR_I$eff, file='eficiencia.xlsx') #exporta os dados de eficiencia
