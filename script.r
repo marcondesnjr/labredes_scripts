@@ -8,7 +8,8 @@ library("ptsuite")
 library("openxlsx")
 
 ##################################################################################
-BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
+#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
+BASE_DIR <- file.path("/","home","jmnj","projs", "lab-redes", "labredes_scripts") # Change this to the path of the directory where the tests are stored
 DATA_DIR <- file.path(BASE_DIR, "data") # Change this to the path of the directory where the tests are stored
 RESULT_DIR <- file.path(BASE_DIR, "Results.xlsx") # Change this to the path of a file where the tests results will be stored
 ##################################################################################
@@ -70,9 +71,9 @@ for(ram in rams){
             hurst <- NA
             alfaTailShape <- NA
           }else{
-            fdim <- fd.estimate(timeSeries, method="rodogram")[[2]]
-            hurst <- hurstexp(timeSeries)[[1]]
-            alfaTailShape <- alpha_mle(timeSeries)[[1]]
+            fdim <- fd.estimate(timeSeries, method="rodogram")[["fd"]]
+            hurst <- hurstexp(timeSeries)[["Hs"]] #???
+            alfaTailShape <- alpha_mle(timeSeries)[["shape"]]
           }
           
           
@@ -87,8 +88,6 @@ for(ram in rams){
             alfaTailShape = alfaTailShape
           )
           
-          #row <- data.frame(DMUId, fdim, timeToTest, TimePerRequest, transferRate, requestPerSecond, hurst, alfaTailShape)
-          
           DMUDataFrame <- rbind(DMUDataFrame, row)
       }
     }
@@ -97,7 +96,6 @@ for(ram in rams){
 
 colnames(DMUDataFrame) <- c("DMU", "Fractal Dimension" ,"Time Taken To Tests", "Time Per Request","Transfer Rate", "Requests Per Second", "Hurst Parameter", "Alfa Tail Shape" )
 colnames(DMUDesc) <- c("VRAM" ,"Server", "Algorithm")
-#DFList[["DMUDesc"]] <- DMUDesc
 
 wb <- createWorkbook()
 addWorksheet(wb, "DMUDesc")
@@ -110,12 +108,9 @@ for(scaleName in scaleVector){
   filtered <- filtered[, -1]
   addWorksheet(wb, scaleName)
   writeDataTable(wb, scaleName, x = filtered, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
-  #write.table(filtered, file.path(BASE_DIR, paste(scaleName, ".csv", sep = "")), sep = ",", row.names = TRUE, col.names = TRUE)
 }
 
 saveWorkbook(wb, RESULT_DIR, overwrite = TRUE)
-#write.xlsx(DFList, file = RESULT_DIR , rowNames=TRUE, colNames=TRUE)
-
 
 
 
