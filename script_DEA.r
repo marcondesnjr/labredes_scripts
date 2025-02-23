@@ -6,7 +6,6 @@
 
 library("Benchmarking")
 library("openxlsx")
-library("ggplot2")
 
 ######################################################################################################
 BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
