@@ -19,20 +19,29 @@ DMU_SHEET <- 1 # sheet with DMU descriptions
 ######################################################################################################
 
 
-main <- function() {
-
-  WORKBOOK <- loadWorkbook(DATA_XLSX)
-  WORKBOOK_OUTPUT <- createWorkbook()
-  SHEET_NAMES <- names(WORKBOOK)[SHEETS_NUMS]
-  DescSheet <- readWorkbook(WORKBOOK, sheet = DMU_SHEET, rowNames = TRUE)
-  addWorksheet(WORKBOOK_OUTPUT, sheetName = "DMUS")
-  writeDataTable(WORKBOOK_OUTPUT, "DMUS", x = DescSheet, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
+scriptDEA <- function(
+    base_dir = BASE_DIR, 
+    data_xlsx = DATA_XLSX, 
+    final_table = FINAL_TABLE, 
+    input_vars = INPUT_VARS, 
+    output_vars = OUTPUT_VARS, 
+    sheets_nums = SHEETS_NUMS, 
+    dmu_sheet = DMU_SHEET
+)
+{
+  
+  workbook <- loadWorkbook(data_xlsx)
+  workbook_output <- createWorkbook()
+  sheet_names <- names(workbook)[sheets_nums]
+  DescSheet <- readWorkbook(workbook, sheet = dmu_sheet, rowNames = TRUE)
+  addWorksheet(workbook_output, sheetName = "DMUS")
+  writeDataTable(workbook_output, "DMUS", x = DescSheet, rowNames = TRUE, colNames = TRUE, tableStyle = "TableStyleMedium15")
   allDataFrame <- data.frame()
   
-    
-  for(sh in SHEET_NAMES){
-    data <- read.xlsx(WORKBOOK, colNames = TRUE, rowNames = TRUE, startRow=1, sheet=sh) # read spreadsheet
-    dataDEA <- processWorksheet(data, sh, INPUT_VARS, OUTPUT_VARS, WORKBOOK_OUTPUT)
+  
+  for(sh in sheet_names){
+    data <- read.xlsx(workbook, colNames = TRUE, rowNames = TRUE, startRow=1, sheet=sh) # read spreadsheet
+    dataDEA <- processWorksheet(data, sh, input_vars, output_vars, workbook_output)
     
     escalDataDEA <- dataDEA
     rownames(escalDataDEA) <- paste(rownames(dataDEA), sh, sep = ".")
@@ -40,25 +49,19 @@ main <- function() {
     
   }
   
-  
-  ###
-  
-  processWorksheet(allDataFrame, "FULL", INPUT_VARS, OUTPUT_VARS, WORKBOOK_OUTPUT)
+  processWorksheet(allDataFrame, "FULL", input_vars, output_vars, workbook_output)
   
   #Ordering
-  sheetsNames <- names(WORKBOOK_OUTPUT)
+  sheetsNames <- names(workbook_output)
   
   mainSheets <- sheetsNames[grepl("\\.MAIN$", sheetsNames)]
   otherSheets <- sheetsNames[!grepl("\\.MAIN$|DMUS", sheetsNames)]
   
   order <- c("DMUS",mainSheets, otherSheets)
-  worksheetOrder(WORKBOOK_OUTPUT) <- match(order, sheetsNames)
-  saveWorkbook(WORKBOOK_OUTPUT, FINAL_TABLE, overwrite = TRUE)
-
+  worksheetOrder(workbook_output) <- match(order, sheetsNames)
+  saveWorkbook(workbook_output, FINAL_TABLE, overwrite = TRUE)
+  
 }
-
-
-
 
 
 
@@ -173,4 +176,4 @@ processWorksheet <- function(data, sh, inputVars, outputVars, workbookOutput) {
   return(dataDEA)
 }
 
-main()
+scriptDEA()
