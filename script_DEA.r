@@ -9,8 +9,8 @@ library("openxlsx")
 
 
 ######################################################################################################
-#BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
-BASE_DIR <- file.path("/","home","jmnj","projs", "lab-redes", "labredes_scripts") # Change this to the path of the directory where the tests are stored
+BASE_DIR <- file.path("/","home","jmnj","labredes","sctests") # Change this to the path of the directory where the tests are stored
+#BASE_DIR <- file.path("/","home","jmnj","projs", "lab-redes", "labredes_scripts") # Change this to the path of the directory where the tests are stored
 DATA_XLSX <- file.path(BASE_DIR, "Results.xlsx") # Change this to the path of a file where the tests results are stored
 FINAL_TABLE <- file.path(BASE_DIR, "Results_Final.xlsx") # Change this to the path of a file where the tests results will be stored
 INPUT_VARS <- c("Fractal.Dimension", "Time.Taken.To.Tests", "Time.Per.Request") # input variables
@@ -99,15 +99,15 @@ for(sh in SHEET_NAMES){
   colsLength <- dim(compDataframe)[[2]]
   
   #First col bold
-  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(textDecoration = "bold"), cols = 1, rows = 1:rowsLenght+1)
+  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(textDecoration = "bold"), cols = 1, rows = 1:rowsLength+1)
   
   ## Number format
   
   colsNumberStyle = c(match(INPUT_VARS,colnames(compDataframe)), match(OUTPUT_VARS,colnames(compDataframe)))+1
   colsPercentStyle = match(colnames(effDataframe), colnames(compDataframe))+1
   
-  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(numFmt = "0.00"), cols = colsNumberStyle, rows = 1:rowsLenght+1, gridExpand = TRUE)
-  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(numFmt = "0.00%"), cols = colsPercentStyle, rows = 1:rowsLenght+1, gridExpand = TRUE)
+  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(numFmt = "0.00"), cols = colsNumberStyle, rows = 1:rowsLength+1, gridExpand = TRUE)
+  addStyle(WORKBOOK_OUTPUT, sheetName, style = createStyle(numFmt = "0.00%"), cols = colsPercentStyle, rows = 1:rowsLength+1, gridExpand = TRUE)
 
   ## Color Scale
   ### Lower is better, input vars
