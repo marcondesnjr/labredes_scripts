@@ -209,7 +209,7 @@ def run_local(cmd, out=None):
         stdout, stderr = p.communicate()
         if p.returncode != 0:
             raise subprocess.CalledProcessError(p.returncode, cmd, output=stdout)
-        print(stdout)
+        print(stdout.decode("utf-8"))
         return stdout
     else:
         p = subprocess.Popen(shlex.split(cmd), stdout=out, stderr=subprocess.PIPE)
