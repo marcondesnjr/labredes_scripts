@@ -48,7 +48,9 @@ for(sh in SHEET_NAMES){
   CCR_O=dea(inputs,outputs,RTS="CRS",ORIENTATION="OUT", SLACK=TRUE)
   BCC_O=dea(inputs,outputs,RTS="VRS",ORIENTATION="OUT", SLACK=TRUE)
   
-  dea.plot(inputs,outputs,RTS="crs",ORIENTATION  ="in");
+  dea.plot(inputs,outputs,RTS="vrs",ORIENTATION="out", main = sh, txt = TRUE);
+  dea.plot.frontier(inputs, outputs, txt=TRUE, main = paste(sh, "frontier"));
+  
   ########
   bestDMU = which.max(SCCR_I$eff)
   badDMU = which.min(SCCR_I$eff)
