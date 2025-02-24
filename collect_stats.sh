@@ -12,7 +12,7 @@
 # Author: Marcondes Junior
 # github.com/marcondesnjr
 
-FILE_LIST=$(find data -type f -name '*_out.txt')
+FILE_LIST=$(find data -type f -name '*_out.txt') # Will not work witch spaces on paths :v
 for file in $FILE_LIST; do
     DIR_NAME=$(dirname "$file")
     echo
