@@ -1,0 +1,10 @@
+2025-03-06 08:02:30,624 root         INFO     pyDEA started as a GUI application.
+2025-03-06 08:03:28,743 root         INFO     Started solving given DEA model(s).
+2025-03-06 08:03:28,744 root         INFO     Parameters: <ORIENTATION> = 'input', <PRICE_RATIO_RESTRICTIONS> = '', <PEEL_THE_ONION> = '', <OUTPUT_FILE> = '', <DEA_FORM> = 'env', <MULTIPLIER_MODEL_TOLERANCE> = '0', <OUTPUT_CATEGORIES> = 'Requests Per Second;Transfer Rate;Hurst Parameter;Alfa Tail Shape', <ABS_WEIGHT_RESTRICTIONS> = '', <USE_SUPER_EFFICIENCY> = 'yes', <RETURN_TO_SCALE> = 'CRS', <WEAKLY_DISPOSAL_CATEGORIES> = '', <VIRTUAL_WEIGHT_RESTRICTIONS> = '', <MAXIMIZE_SLACKS> = '', <INPUT_CATEGORIES> = 'Fractal Dimension;Time Taken To Tests;Time Per Request', <NON_DISCRETIONARY_CATEGORIES> = '', <DATA_FILE> = '/home/jmnj/projs/lab-redes/labredes_scripts/Atividade/Results.xlsx', <CATEGORICAL_CATEGORY> = ''
+2025-03-06 08:03:29,407 root         INFO     Given DEA model(s) successfully solved.
+2025-03-06 11:12:04,720 root         INFO     pyDEA exited.
+2025-03-06 11:22:37,828 root         INFO     pyDEA started as a GUI application.
+2025-03-06 11:23:16,985 root         INFO     Started solving given DEA model(s).
+2025-03-06 11:23:16,985 root         INFO     Parameters: <NON_DISCRETIONARY_CATEGORIES> = '', <DEA_FORM> = 'env', <MAXIMIZE_SLACKS> = '', <PRICE_RATIO_RESTRICTIONS> = '', <MULTIPLIER_MODEL_TOLERANCE> = '0', <WEAKLY_DISPOSAL_CATEGORIES> = '', <OUTPUT_CATEGORIES> = 'Hurst Parameter;Alfa Tail Shape;Requests Per Second;Transfer Rate', <RETURN_TO_SCALE> = 'CRS', <PEEL_THE_ONION> = '', <VIRTUAL_WEIGHT_RESTRICTIONS> = '', <ABS_WEIGHT_RESTRICTIONS> = '', <OUTPUT_FILE> = '', <CATEGORICAL_CATEGORY> = '', <USE_SUPER_EFFICIENCY> = 'yes', <INPUT_CATEGORIES> = 'Time Per Request;Time Taken To Tests;Fractal Dimension', <ORIENTATION> = 'input', <DATA_FILE> = '/home/jmnj/projs/lab-redes/labredes_scripts/Atividade/Results.xlsx'
+2025-03-06 11:23:17,705 root         INFO     Given DEA model(s) successfully solved.
+2025-03-06 12:39:37,012 root         INFO     pyDEA exited.
